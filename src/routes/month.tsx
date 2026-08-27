@@ -94,7 +94,9 @@ function MonthPage() {
     <AppShell title="خطة الشهر" subtitle={monthLabel(plan.month)}>
       <section className="panel-light space-y-2 p-5">
         <h2 className="text-lg font-black">{plan.title}</h2>
-        <p className="text-sm opacity-80">{plan.description}</p>
+        <p className="text-sm opacity-80">محاضرة الشهر: {plan.lecture_topic}</p>
+        <p className="text-sm opacity-80">ورد القراءة: {plan.reading_topic}</p>
+        <p className="text-sm opacity-80">الجلسة الحوارية: {plan.session_topic}</p>
       </section>
 
       <section className="panel space-y-3 p-5">
@@ -144,6 +146,7 @@ function MonthPage() {
               <h3 className="text-sm font-black">تمرين المتابعة والتطبيق</h3>
               {data?.application ? <Chip tone={data.application.status === "approved" ? "success" : "accent"}>{statusLabel(data.application.status)}</Chip> : null}
             </header>
+            <p className="text-xs text-muted-foreground">{plan.application_title} — {plan.application_description}</p>
             <Field placeholder="ماذا طبّقت؟" value={appDesc} onChange={(e) => setAppDesc(e.target.value)} />
             <Area placeholder="ما النتيجة أو الأثر الذي لاحظته؟" value={appResult} onChange={(e) => setAppResult(e.target.value)} />
             <Btn className="w-full" disabled={!appDesc.trim() || submitApplication.isPending} onClick={() => submitApplication.mutate()}>
