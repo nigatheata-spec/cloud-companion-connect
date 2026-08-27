@@ -28,7 +28,7 @@ export function ParticipantHome() {
   const habitToday = data?.logs.find((l) => l.kind === "habit" && l.log_date === today);
 
   const saveLog = useMutation({
-    mutationFn: async (payload: { kind: "reading" | "habit"; note?: string; photo_path?: string }) => {
+    mutationFn: async (payload: { kind: "reading" | "habit"; note?: string | undefined; photo_path?: string | undefined }) => {
       if (!plan || !user) return;
       const { error } = await supabase.from("daily_logs").upsert(
         {
@@ -144,7 +144,7 @@ function HabitCard({
 }: {
   habitTitle: string;
   requiresPhoto: boolean;
-  log?: DailyLog;
+  log?: DailyLog | undefined;
   userId: string;
   onSave: (photoPath?: string) => void;
   saving: boolean;
