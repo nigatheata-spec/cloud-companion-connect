@@ -35,12 +35,12 @@ export function monthStart(d = new Date()) {
 }
 
 export function daysInMonth(monthISO: string) {
-  const [y, m] = monthISO.split("-").map(Number);
+  const [y, m] = monthISO.split("-").map(Number) as [number, number];
   return new Date(y, m, 0).getDate();
 }
 
 export function monthLabel(monthISO: string) {
-  const [y, m] = monthISO.split("-").map(Number);
+  const [y, m] = monthISO.split("-").map(Number) as [number, number];
   const names = [
     "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
     "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
@@ -61,7 +61,7 @@ export async function fetchCurrentPlan(): Promise<PlanRow | null> {
   const plans = await fetchPlans();
   if (plans.length === 0) return null;
   const now = monthStart();
-  return plans.find((p) => p.month === now) ?? plans[plans.length - 1];
+  return plans.find((p) => p.month === now) ?? plans[plans.length - 1] ?? null;
 }
 
 export type ScoreInput = {
