@@ -21,7 +21,10 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
       },
     }),
     viteReact(),
-    nitro({ preset: 'cloudflare-module' }),
+    // No explicit preset: Nitro auto-detects the host at build time
+    // (Vercel, Cloudflare, Netlify, ...) and falls back to a Node server
+    // locally. Override with the NITRO_PRESET env var if you need to.
+    nitro(),
   ]
 
   return {

@@ -41,3 +41,6 @@ dist-ssr
 
 # Supabase CLI scratch
 supabase/.temp/
+
+# Vercel build output
+.vercel/
