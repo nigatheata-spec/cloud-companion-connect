@@ -247,6 +247,57 @@ export type Database = {
         }
         Relationships: []
       }
+      groups: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          note: string
+          starts_on: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          note?: string
+          starts_on?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          note?: string
+          starts_on?: string | null
+        }
+        Relationships: []
+      }
+      group_members: {
+        Row: {
+          added_at: string
+          group_id: string
+          id: string
+          participant_id: string
+        }
+        Insert: {
+          added_at?: string
+          group_id: string
+          id?: string
+          participant_id: string
+        }
+        Update: {
+          added_at?: string
+          group_id?: string
+          id?: string
+          participant_id?: string
+        }
+        Relationships: []
+      }
       parent_links: {
         Row: {
           created_at: string

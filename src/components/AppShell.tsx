@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { CalendarDays, Home, LineChart, UserRound } from "lucide-react";
+import { CalendarDays, Home, LineChart, Settings, UserRound } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -12,9 +12,19 @@ const NAV = [
   { to: "/profile", label: "حسابي", icon: UserRound },
 ] as const;
 
+// Supervisors trade the personal progress tab for the admin panel; the other
+// roles never see it.
+const ADMIN_NAV = [
+  { to: "/", label: "الرئيسية", icon: Home },
+  { to: "/month", label: "خطة الشهر", icon: CalendarDays },
+  { to: "/admin", label: "الإدارة", icon: Settings },
+  { to: "/profile", label: "حسابي", icon: UserRound },
+] as const;
+
 export function AppShell({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   const { pathname } = useRouterState({ select: (s) => s.location });
-  const { fullName } = useAuth();
+  const { fullName, role } = useAuth();
+  const nav = role === "supervisor" ? ADMIN_NAV : NAV;
 
   return (
     <div className="min-h-screen bg-background pb-28">
@@ -35,7 +45,7 @@ export function AppShell({ title, subtitle, children }: { title: string; subtitl
       <nav className="fixed inset-x-0 bottom-0 z-20">
         <div className="screen-shell pb-4">
           <div className="panel flex items-center justify-between gap-1 px-2 py-2">
-            {NAV.map((item) => {
+            {nav.map((item) => {
               const active = pathname === item.to;
               const Icon = item.icon;
               return (
