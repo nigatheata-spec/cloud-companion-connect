@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import logoAsset from "@/assets/logo.png.asset.json";
-import { Area, Btn, Field } from "@/components/kit";
+import { Btn, Field } from "@/components/kit";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
@@ -131,4 +131,3 @@ function AuthPage() {
   );
 }
 
-export const _unused = Area;
