@@ -38,3 +38,6 @@ dist-ssr
 
 # Local dev
 .claude/
+
+# Supabase CLI scratch
+supabase/.temp/
