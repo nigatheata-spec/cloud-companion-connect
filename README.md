@@ -1,24 +1,36 @@
-# Cloud Companion Connect
+# نجوم القيادة — Leadership Stars
 
-@"/Users/3as/Downloads/document(9).pdf" the pdf explains the app fully its a web based phone first website plz use the colors and the layout from the reference app plz and use the companys logo use lovable cloud thing for the backend ill give u the link in a second
+Phone-first Arabic (RTL) web app for tracking a 6-month youth leadership program:
+daily reading and habit logging, monthly application exercises, attendance, and
+weighted monthly scoring across participant / parent / supervisor roles.
 
-This project was built with [Lovable](https://lovable.dev).
+## Stack
 
-## Build with Lovable
+TanStack Start (SSR) · React 19 · TanStack Router + React Query · Tailwind CSS v4 ·
+shadcn/ui · Supabase (Postgres + Auth + Storage + RLS)
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/287c768c-1b91-445a-a54c-372f429005cc).
+## Setup
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+```bash
+npm install
+cp .env.example .env   # fill in your Supabase project values
 npm run dev
 ```
+
+## Database
+
+Migrations live in `supabase/migrations/`. With the Supabase CLI linked to your project:
+
+```bash
+supabase db push
+```
+
+## Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Dev server |
+| `npm run build` | Production build (Nitro, `cloudflare-module` preset) |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | ESLint |
+| `npm run format` | Prettier |

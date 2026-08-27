@@ -1,10 +1,9 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
+# Agent notes
+
+TanStack Start + React 19 + Tailwind v4 app backed directly by Supabase.
+
+- `src/routes/` — file-based routes (`routeTree.gen.ts` is generated, don't edit).
+- `src/integrations/supabase/` — browser client, server (service-role) client, auth middleware.
+- `supabase/migrations/` — schema, RLS, seed. Apply with `supabase db push`.
+- Env lives in `.env` (see `.env.example`). Never commit real keys.
+- UI copy is Arabic, RTL. No emojis in UI — use lucide icons.

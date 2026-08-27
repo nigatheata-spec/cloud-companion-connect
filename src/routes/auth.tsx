@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import logoAsset from "@/assets/logo.png.asset.json";
+import logoUrl from "@/assets/logo.png";
 import { Btn, Field } from "@/components/kit";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth")({
@@ -62,20 +61,18 @@ function AuthPage() {
   };
 
   const google = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) {
-      toast.error("تعذّر تسجيل الدخول عبر Google");
-      return;
-    }
-    if (result.redirected) return;
-    void navigate({ to: "/" });
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) toast.error("تعذّر تسجيل الدخول عبر Google");
   };
 
   return (
     <main className="flex min-h-screen flex-col justify-center bg-background py-10">
       <div className="screen-shell space-y-6">
         <div className="text-center">
-          <img src={logoAsset.url} alt="شعار نجوم القيادة" className="mx-auto h-24 w-24 rounded-3xl bg-cream object-contain p-2" />
+          <img src={logoUrl} alt="شعار نجوم القيادة" className="mx-auto h-24 w-24 rounded-3xl bg-cream object-contain p-2" />
           <h1 className="mt-4 text-2xl font-black">نجوم القيادة</h1>
           <p className="mt-1 text-sm text-muted-foreground">منهجية التقييم والمتابعة الرقمية</p>
         </div>

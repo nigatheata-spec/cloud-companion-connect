@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { CalendarDays, Home, LineChart, UserRound } from "lucide-react";
-import logoAsset from "@/assets/logo.png.asset.json";
+import logoUrl from "@/assets/logo.png";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +26,7 @@ export function AppShell({ title, subtitle, children }: { title: string; subtitl
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <span className="hidden max-w-28 truncate text-xs text-muted-foreground sm:block">{fullName}</span>
-            <img src={logoAsset.url} alt="شعار نجوم القيادة" className="h-11 w-11 rounded-2xl bg-cream object-contain p-1" />
+            <img src={logoUrl} alt="شعار نجوم القيادة" className="h-11 w-11 rounded-2xl bg-cream object-contain p-1" />
           </div>
         </div>
         <div className="mt-5 space-y-4">{children}</div>
