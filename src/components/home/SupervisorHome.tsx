@@ -9,9 +9,31 @@ import { fetchCurrentPlan, monthLabel, scoreBand, type PlanRow } from "@/lib/pro
 
 type Participant = { id: string; name: string };
 
-async function fetchParticipants(): Promise<Participant[]> {
+/**
+ * If this supervisor has a camp assigned to her (groups.supervisor_id), her
+ * home dashboard is scoped to that camp's roster only. A supervisor with no
+ * assigned camp still sees everyone, which keeps a single-supervisor setup
+ * working exactly as before.
+ */
+async function fetchParticipants(supervisorId: string): Promise<Participant[]> {
+  const { data: myGroups } = await supabase
+    .from("groups")
+    .select("id")
+    .eq("supervisor_id", supervisorId);
+  const myGroupIds = (myGroups ?? []).map((g) => g.id);
+
+  let participantIds: string[] | null = null;
+  if (myGroupIds.length > 0) {
+    const { data: members } = await supabase
+      .from("group_members")
+      .select("participant_id")
+      .in("group_id", myGroupIds);
+    participantIds = (members ?? []).map((m) => m.participant_id);
+  }
+
   const { data: roles } = await supabase.from("user_roles").select("user_id").eq("role", "participant");
-  const ids = (roles ?? []).map((r) => r.user_id);
+  let ids = (roles ?? []).map((r) => r.user_id);
+  if (participantIds) ids = ids.filter((id) => participantIds!.includes(id));
   if (ids.length === 0) return [];
   const { data: profiles } = await supabase.from("profiles").select("id,full_name").in("id", ids);
   return (profiles ?? []).map((p) => ({ id: p.id, name: p.full_name || "مشارك" }));
@@ -21,7 +43,11 @@ export function SupervisorHome() {
   const { user } = useAuth();
   const [tab, setTab] = useState<"attendance" | "follow">("attendance");
   const planQuery = useQuery({ queryKey: ["plan"], queryFn: fetchCurrentPlan });
-  const listQuery = useQuery({ queryKey: ["participants"], queryFn: fetchParticipants });
+  const listQuery = useQuery({
+    queryKey: ["participants", user?.id],
+    enabled: !!user?.id,
+    queryFn: () => fetchParticipants(user!.id),
+  });
   const plan = planQuery.data ?? null;
   const participants = listQuery.data ?? [];
 
@@ -102,7 +128,11 @@ function AttendanceRow({ participant, plan, supervisorId }: { participant: Parti
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const present = (kind: string) => !!data?.find((a) => a.kind === kind)?.present;
+  const status = (kind: string): "present" | "absent" | "unrecorded" => {
+    const row = data?.find((a) => a.kind === kind);
+    if (!row) return "unrecorded";
+    return row.present ? "present" : "absent";
+  };
 
   return (
     <section className="panel space-y-3 p-4">
@@ -114,14 +144,14 @@ function AttendanceRow({ participant, plan, supervisorId }: { participant: Parti
           </span>
           <div className="flex shrink-0 gap-2">
             <Btn
-              tone={present(kind) ? "accent" : "ghost"}
+              tone={status(kind) === "present" ? "accent" : "ghost"}
               className="min-h-9 px-3 text-xs"
               onClick={() => mark.mutate({ kind, present: true })}
             >
               حاضر
             </Btn>
             <Btn
-              tone="ghost"
+              tone={status(kind) === "absent" ? "danger" : "ghost"}
               className="min-h-9 px-3 text-xs"
               onClick={() => mark.mutate({ kind, present: false })}
             >

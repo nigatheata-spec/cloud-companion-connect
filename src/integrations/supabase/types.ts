@@ -256,6 +256,7 @@ export type Database = {
           name: string
           note: string
           starts_on: string | null
+          supervisor_id: string | null
         }
         Insert: {
           created_at?: string
@@ -265,6 +266,7 @@ export type Database = {
           name: string
           note?: string
           starts_on?: string | null
+          supervisor_id?: string | null
         }
         Update: {
           created_at?: string
@@ -274,6 +276,7 @@ export type Database = {
           name?: string
           note?: string
           starts_on?: string | null
+          supervisor_id?: string | null
         }
         Relationships: []
       }
@@ -295,6 +298,33 @@ export type Database = {
           group_id?: string
           id?: string
           participant_id?: string
+        }
+        Relationships: []
+      }
+      personality_results: {
+        Row: {
+          note: string | null
+          participant_id: string
+          source: string
+          type: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          note?: string | null
+          participant_id: string
+          source?: string
+          type: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          note?: string | null
+          participant_id?: string
+          source?: string
+          type?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }

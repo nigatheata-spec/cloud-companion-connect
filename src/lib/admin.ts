@@ -8,6 +8,7 @@ export type Group = {
   note: string;
   starts_on: string | null;
   is_active: boolean;
+  supervisor_id: string | null;
 };
 
 export type Member = {
@@ -21,7 +22,7 @@ export type Member = {
 export async function fetchGroups(): Promise<Group[]> {
   const { data, error } = await supabase
     .from("groups")
-    .select("id,name,note,starts_on,is_active")
+    .select("id,name,note,starts_on,is_active,supervisor_id")
     .order("created_at", { ascending: true });
   if (error) throw error;
   return data ?? [];

@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Ring, Stat } from "@/components/kit";
+import { useAuth } from "@/lib/auth";
 import { fetchGroups, fetchMembers, fetchOverview } from "@/lib/admin";
 import { fetchCurrentPlan, monthLabel } from "@/lib/program";
 
 export function OverviewPanel() {
+  const { user } = useAuth();
   const [groupId, setGroupId] = useState("");
 
   const planQuery = useQuery({ queryKey: ["plan"], queryFn: fetchCurrentPlan });
@@ -14,6 +16,14 @@ export function OverviewPanel() {
   const plan = planQuery.data ?? null;
   const groups = groupsQuery.data ?? [];
   const members = membersQuery.data ?? [];
+
+  // A supervisor with her own assigned camp starts scoped to it, instead of
+  // to the whole program, the moment we know which group that is.
+  const myGroup = groups.find((g) => g.supervisor_id === user?.id);
+  useEffect(() => {
+    if (myGroup && !groupId) setGroupId(myGroup.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myGroup?.id]);
 
   const participantIds = members
     .filter((m) => m.role === "participant" && (!groupId || m.groupId === groupId))

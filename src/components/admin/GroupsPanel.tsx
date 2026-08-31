@@ -20,6 +20,9 @@ export function GroupsPanel() {
 
   const countIn = (groupId: string) =>
     members.filter((m) => m.role === "participant" && m.groupId === groupId).length;
+  const supervisors = members.filter((m) => m.role === "supervisor");
+  const supervisorName = (id: string | null) =>
+    id ? supervisors.find((s) => s.id === id)?.name ?? "—" : null;
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
@@ -39,6 +42,7 @@ export function GroupsPanel() {
       <GroupForm
         group={editing}
         createdBy={user?.id ?? null}
+        supervisors={members.filter((m) => m.role === "supervisor")}
         onDone={() => {
           setCreating(false);
           setEditing(null);
@@ -70,7 +74,10 @@ export function GroupsPanel() {
 
           {g.note ? <p className="text-xs text-muted-foreground">{g.note}</p> : null}
 
-          <p className="text-xs text-muted-foreground">{countIn(g.id)} مشارك</p>
+          <p className="text-xs text-muted-foreground">
+            {countIn(g.id)} مشارك
+            {supervisorName(g.supervisor_id) ? ` · تشرف عليها ${supervisorName(g.supervisor_id)}` : " · بدون مشرفة"}
+          </p>
 
           <div className="flex gap-2">
             <Btn tone="ghost" className="min-h-9 flex-1 text-xs" onClick={() => setEditing(g)}>
@@ -106,10 +113,12 @@ export function GroupsPanel() {
 function GroupForm({
   group,
   createdBy,
+  supervisors,
   onDone,
 }: {
   group: Group | null;
   createdBy: string | null;
+  supervisors: { id: string; name: string }[];
   onDone: () => void;
 }) {
   const qc = useQueryClient();
@@ -117,6 +126,7 @@ function GroupForm({
   const [note, setNote] = useState(group?.note ?? "");
   const [startsOn, setStartsOn] = useState(group?.starts_on ?? "");
   const [isActive, setIsActive] = useState(group?.is_active ?? true);
+  const [supervisorId, setSupervisorId] = useState(group?.supervisor_id ?? "");
 
   const save = useMutation({
     mutationFn: async () => {
@@ -126,6 +136,7 @@ function GroupForm({
         note: note.trim(),
         starts_on: startsOn || null,
         is_active: isActive,
+        supervisor_id: supervisorId || null,
       };
       const { error } = group
         ? await supabase.from("groups").update(payload).eq("id", group.id)
@@ -162,6 +173,22 @@ function GroupForm({
         onChange={(e) => setNote(e.target.value)}
         placeholder="وصف مختصر للمجموعة"
       />
+
+      <label className="block space-y-1.5">
+        <span className="text-xs font-bold text-muted-foreground">المشرفة المسؤولة</span>
+        <select
+          value={supervisorId}
+          onChange={(e) => setSupervisorId(e.target.value)}
+          className="min-h-11 w-full rounded-2xl border border-input bg-surface px-4 text-sm text-foreground outline-none focus:border-accent"
+        >
+          <option value="">بدون تخصيص</option>
+          {supervisors.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <label className="flex items-center justify-between rounded-2xl bg-muted px-4 py-3">
         <span className="text-xs font-bold">مجموعة نشطة</span>

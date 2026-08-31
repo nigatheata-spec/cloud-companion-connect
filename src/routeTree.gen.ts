@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MonthRouteImport } from './routes/month'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as QuizRouteImport } from './routes/quiz'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +47,11 @@ const ProgressRoute = ProgressRouteImport.update({
   path: '/progress',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuizRoute = QuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/month': typeof MonthRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
+  '/quiz': typeof QuizRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/month': typeof MonthRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
+  '/quiz': typeof QuizRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,14 +79,23 @@ export interface FileRoutesById {
   '/month': typeof MonthRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
+  '/quiz': typeof QuizRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/month' | '/profile' | '/progress'
+  fullPaths:
+    '/' | '/admin' | '/auth' | '/month' | '/profile' | '/progress' | '/quiz'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/auth' | '/month' | '/profile' | '/progress'
+  to: '/' | '/admin' | '/auth' | '/month' | '/profile' | '/progress' | '/quiz'
   id:
-    '__root__' | '/' | '/admin' | '/auth' | '/month' | '/profile' | '/progress'
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/month'
+    | '/profile'
+    | '/progress'
+    | '/quiz'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -88,6 +105,7 @@ export interface RootRouteChildren {
   MonthRoute: typeof MonthRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
+  QuizRoute: typeof QuizRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -134,6 +152,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quiz': {
+      id: '/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof QuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -144,6 +169,7 @@ const rootRouteChildren: RootRouteChildren = {
   MonthRoute: MonthRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
+  QuizRoute: QuizRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

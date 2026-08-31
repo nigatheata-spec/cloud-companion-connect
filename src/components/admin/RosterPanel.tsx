@@ -3,7 +3,15 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Btn, Chip } from "@/components/kit";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { fetchGroups, fetchMembers, type Member } from "@/lib/admin";
+import {
+  fetchPersonalityResult,
+  overridePersonalityResult,
+  PATTERN_ORDER,
+  PATTERNS,
+  type PersonalityType,
+} from "@/lib/personality";
 
 const ROLE_LABEL = {
   participant: "يافع",
@@ -187,6 +195,8 @@ function MemberRow({
               </select>
             ) : null}
           </div>
+
+          <PersonalityField participantId={member.id} />
         </>
       ) : null}
 
@@ -196,5 +206,47 @@ function MemberRow({
         </p>
       ) : null}
     </section>
+  );
+}
+
+function PersonalityField({ participantId }: { participantId: string }) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const resultQuery = useQuery({
+    queryKey: ["personality", participantId],
+    queryFn: () => fetchPersonalityResult(participantId),
+  });
+
+  const save = useMutation({
+    mutationFn: (type: PersonalityType) =>
+      overridePersonalityResult(participantId, type, user?.id ?? "", ""),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["personality", participantId] });
+      toast.success("تم تحديث نمط الشخصية");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const result = resultQuery.data;
+
+  return (
+    <label className="block space-y-1.5">
+      <span className="text-xs font-bold text-muted-foreground">
+        نمط الشخصية
+        {result ? (result.source === "quiz" ? " (من الاختبار)" : " (تعديل المشرفة)") : ""}
+      </span>
+      <select
+        value={result?.type ?? ""}
+        onChange={(e) => save.mutate(e.target.value as PersonalityType)}
+        className="min-h-11 w-full rounded-2xl border border-input bg-surface px-4 text-sm text-foreground outline-none focus:border-accent"
+      >
+        <option value="">لم يُحدَّد بعد</option>
+        {PATTERN_ORDER.map((type) => (
+          <option key={type} value={type}>
+            {PATTERNS[type].label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

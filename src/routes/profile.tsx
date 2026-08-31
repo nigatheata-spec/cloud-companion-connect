@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
@@ -6,6 +6,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { Btn, Chip } from "@/components/kit";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { fetchPersonalityResult, PATTERNS } from "@/lib/personality";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -44,6 +45,12 @@ function ProfilePage() {
     },
   });
 
+  const personalityQuery = useQuery({
+    queryKey: ["personality", user?.id],
+    enabled: !!user && role === "participant",
+    queryFn: () => fetchPersonalityResult(user!.id),
+  });
+
   return (
     <AppShell title="حسابي" subtitle="نجوم القيادة">
       <section className="panel-light space-y-2 p-5">
@@ -51,6 +58,32 @@ function ProfilePage() {
         <p className="text-sm opacity-80">{user?.email}</p>
         <Chip tone="accent">{ROLE_LABEL[role ?? "participant"]}</Chip>
       </section>
+
+      {role === "participant" ? (
+        <section className="panel space-y-3 p-5">
+          <h3 className="text-sm font-black">اختبار نمط الشخصية</h3>
+          {personalityQuery.data ? (
+            <>
+              <Chip tone="accent">{PATTERNS[personalityQuery.data.type as keyof typeof PATTERNS].label}</Chip>
+              <p className="text-xs text-muted-foreground">
+                {PATTERNS[personalityQuery.data.type as keyof typeof PATTERNS].description}
+              </p>
+              <Link to="/quiz">
+                <Btn tone="ghost" className="w-full">
+                  إعادة الاختبار
+                </Btn>
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground">لم تُجرِ الاختبار بعد.</p>
+              <Link to="/quiz">
+                <Btn className="w-full">ابدأ الاختبار</Btn>
+              </Link>
+            </>
+          )}
+        </section>
+      ) : null}
 
       <section className="panel space-y-2 p-5 text-sm text-muted-foreground">
         <p>يعمل البرنامج على ستة أشهر، وتُحتسب نسبة الإنجاز شهريًا من القراءة والعادة والحضور والتمارين والتطبيق.</p>
